@@ -306,12 +306,20 @@ class HollyAvatarApp:
                     not self.voice_processor.is_listening() and
                     self.speech_queue.empty()):
                     
-                    # Generate spontaneous comment
-                    comment = self.holly_ai.trigger_spontaneous_comment()
-                    if comment:
-                        await self.response_queue.put(comment)
-                        await self.animation_queue.put({'expression': 'senile'})
-                        logger.info(f"Holly spontaneous comment: {comment[:30]}...")
+                    # Generate spontaneous comment (with quota protection)
+                    try:
+                        comment = self.holly_ai.trigger_spontaneous_comment()
+                        if comment:
+                            await self.response_queue.put(comment)
+                            await self.animation_queue.put({'expression': 'senile'})
+                            logger.info(f"Holly spontaneous comment: {comment[:30]}...")
+                    except Exception as e:
+                        if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                            # Pause spontaneous comments when quota exceeded
+                            logger.info("API quota limit reached, pausing spontaneous comments")
+                            self.spontaneous_interval = 600  # Increase to 10 minutes
+                        else:
+                            logger.warning(f"Error generating spontaneous comment: {e}")
                     
                     self.last_spontaneous_comment = current_time
         
@@ -331,13 +339,31 @@ class HollyAvatarApp:
                     self.voice_processor.manual_trigger()
                     logger.info("Manual speech trigger activated")
                 elif event.key == pygame.K_t:
-                    # Test Holly AI response
-                    test_input = "Hello Holly, how are you feeling today?"
-                    asyncio.run_coroutine_threadsafe(
-                        self.speech_queue.put(test_input),
-                        self.loop
-                    )
-                    logger.info(f"Test AI interaction triggered: {test_input}")
+                    # Test Holly with fallback if API quota exceeded
+                    test_responses = [
+                        "Hello there! I'm Holly, the ship's computer. My IQ is 6,000 - the same as 6,000 PE teachers.",
+                        "Right, how's it going? I was just thinking about... what was I thinking about?",
+                        "Fish! Today's fish is trout a la creme. Enjoy your meal.",
+                        "Gordon Bennett! I've been having some interesting thoughts about the nature of... er... things.",
+                        "Everybody's dead, Dave. Well, everybody except me. Oh, and you of course."
+                    ]
+                    
+                    try:
+                        test_input = "Hello Holly, how are you feeling today?"
+                        asyncio.run_coroutine_threadsafe(
+                            self.speech_queue.put(test_input),
+                            self.loop
+                        )
+                        logger.info(f"Test AI interaction triggered: {test_input}")
+                    except:
+                        # Use fallback response if API issues
+                        import random
+                        fallback_response = random.choice(test_responses)
+                        asyncio.run_coroutine_threadsafe(
+                            self.response_queue.put(fallback_response),
+                            self.loop
+                        )
+                        logger.info("Using fallback response due to API quota limit")
                 elif event.key == pygame.K_r:
                     # Reset Holly to neutral state
                     from animation_engine import Expression
