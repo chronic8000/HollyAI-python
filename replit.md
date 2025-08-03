@@ -36,20 +36,26 @@ Audio capabilities are implemented with emphasis on low-latency interaction:
 - **Audio Coordination**: Synchronized audio output with visual lip-sync animations
 
 ### Advanced Animation System
-The visual system provides realistic facial animations:
+The visual system provides realistic facial animations with both image and procedural support:
 
+- **Dual Rendering System**: Support for both image-based animation (using holly.png) and procedural face generation
+- **Image Animation Engine**: Real-time mouth stretching and eye blinking applied to uploaded Holly images
 - **Facial Animation Engine**: Keyframe-based system supporting multiple expressions and micro-expressions
-- **Lip Sync Engine**: Phoneme-based mouth animation synchronized with speech output
+- **Lip Sync Engine**: Phoneme-based mouth animation synchronized with speech output that works with images
 - **Eye Tracking System**: Realistic eye movements, gaze tracking, and various blink types
 - **Expression Management**: Smooth transitions between emotional states and expressions
+- **Computer Interface Effects**: Red Dwarf targeting system with brackets, status lights, and scan lines
 
 ### UI and Rendering
-Visual presentation uses Pygame with Red Dwarf theming:
+Visual presentation uses Pygame with Red Dwarf theming and advanced image animation:
 
 - **Real-time Rendering**: 60 FPS display with smooth animations
-- **Themed Interface**: Dark space aesthetic with computer grid overlays
+- **Image-Based Face Animation**: Supports PNG/JPG images of Holly with mouth and eye animation
+- **Lip-Sync Technology**: Mouth movements automatically sync with speech patterns
+- **Advanced Blinking**: Realistic eye blinking with customizable patterns
+- **Computer Interface Overlay**: Red Dwarf-style targeting brackets and status indicators
+- **Themed Interface**: Dark space aesthetic with computer grid overlays and scan lines
 - **Responsive Layout**: Scalable interface supporting different screen sizes
-- **CSS Styling**: Web-inspired styling system for UI elements
 
 ### Configuration Management
 Centralized configuration system allows easy customization:

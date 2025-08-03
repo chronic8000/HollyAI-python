@@ -8,6 +8,7 @@ import pygame
 import logging
 from typing import Tuple, Dict, Any, Optional
 from pathlib import Path
+import os
 
 from animation_engine import FaceState, Expression
 
@@ -47,6 +48,11 @@ class UIRenderer:
         self.status_bars = {}
         self.interface_panels = []
         
+        # Holly image support
+        self.holly_image = None
+        self.holly_original = None
+        self._load_holly_image()
+        
         logger.info("UI renderer initialized")
     
     def _initialize_fonts(self):
@@ -69,6 +75,37 @@ class UIRenderer:
             # Create minimal fallback fonts
             for size in [16, 24, 32]:
                 self.fonts[size] = pygame.font.Font(None, size)
+    
+    def _load_holly_image(self):
+        """Load Holly's face image if available"""
+        try:
+            # Try to load holly.png first, then fall back to other formats
+            image_paths = [
+                'holly.png',
+                'assets/holly.png', 
+                'assets/holly_face.png',
+                'holly.jpg',
+                'assets/holly.jpg'
+            ]
+            
+            for path in image_paths:
+                if os.path.exists(path):
+                    try:
+                        self.holly_original = pygame.image.load(path).convert_alpha()
+                        # Scale to appropriate size
+                        target_size = (self.holly_scale * 2, self.holly_scale * 2)
+                        self.holly_image = pygame.transform.scale(self.holly_original, target_size)
+                        logger.info(f"Loaded Holly image: {path}")
+                        return
+                    except Exception as e:
+                        logger.warning(f"Failed to load {path}: {e}")
+                        continue
+            
+            logger.info("No Holly image found, using procedural face rendering")
+            
+        except Exception as e:
+            logger.error(f"Error loading Holly image: {e}")
+            self.holly_image = None
     
     def render_background(self):
         """Render Red Dwarf themed background"""
@@ -150,12 +187,45 @@ class UIRenderer:
             self.screen.blit(text_surface, text_rect)
     
     def render_holly_face(self, face_state: FaceState):
-        """Render Holly's animated face"""
+        """Render Holly's animated face with image support"""
         # Calculate face position with floating animation
         float_x, float_y = face_state.head_position
         face_x = int(self.holly_center[0] + float_x * 50)
         face_y = int(self.holly_center[1] + float_y * 30)
         
+        if self.holly_image:
+            # Use image-based rendering with animation
+            self._render_image_based_face(face_x, face_y, face_state)
+        else:
+            # Use procedural face rendering
+            self._render_procedural_face(face_x, face_y, face_state)
+    
+    def _render_image_based_face(self, face_x: int, face_y: int, face_state: FaceState):
+        """Render Holly's face using image with animated overlay"""
+        # Create a copy of the image for animation modifications
+        animated_image = self.holly_image.copy()
+        
+        # Apply facial animation transformations
+        if face_state.mouth_open > 0.1:
+            # Stretch mouth area for speaking
+            self._animate_mouth_on_image(animated_image, face_state)
+        
+        # Apply blinking by darkening eye areas
+        if face_state.left_blink < 0.5 or face_state.right_blink < 0.5:
+            self._animate_blink_on_image(animated_image, face_state)
+        
+        # Calculate image position (centered)
+        img_rect = animated_image.get_rect()
+        img_rect.center = (face_x, face_y)
+        
+        # Draw the animated Holly image
+        self.screen.blit(animated_image, img_rect)
+        
+        # Add computer interface overlay
+        self._draw_interface_overlay(face_x, face_y)
+    
+    def _render_procedural_face(self, face_x: int, face_y: int, face_state: FaceState):
+        """Render Holly's face using procedural drawing"""
         # Draw face outline (head shape)
         head_radius = self.holly_scale
         pygame.draw.circle(self.screen, self.colors['holly_outline'], 
@@ -174,6 +244,9 @@ class UIRenderer:
         
         # Add expression-specific features
         self._draw_expression_features(face_x, face_y, face_state)
+        
+        # Add computer interface overlay
+        self._draw_interface_overlay(face_x, face_y)
     
     def _draw_eyes(self, face_x: int, face_y: int, face_state: FaceState):
         """Draw Holly's eyes with blinking and movement"""
@@ -358,3 +431,91 @@ class UIRenderer:
                 text_surface = self.fonts[12].render(debug_text, True, self.colors['text_secondary'])
                 self.screen.blit(text_surface, (debug_x, debug_y))
                 debug_y += 20
+    
+    def _animate_mouth_on_image(self, image: pygame.Surface, face_state: FaceState):
+        """Apply mouth animation to Holly's image"""
+        # Get image dimensions
+        width, height = image.get_size()
+        
+        # Estimate mouth area (roughly bottom third, center)
+        mouth_area = pygame.Rect(
+            width // 3, height * 2 // 3,
+            width // 3, height // 6
+        )
+        
+        # Create a stretched version for mouth opening
+        if face_state.mouth_open > 0.2:
+            # Stretch the mouth area vertically
+            stretch_factor = 1.0 + (face_state.mouth_open * 0.5)
+            mouth_section = image.subsurface(mouth_area)
+            stretched_mouth = pygame.transform.scale(
+                mouth_section, 
+                (mouth_area.width, int(mouth_area.height * stretch_factor))
+            )
+            
+            # Blit the stretched mouth back
+            y_offset = int((stretched_mouth.get_height() - mouth_area.height) / 2)
+            image.blit(stretched_mouth, (mouth_area.x, mouth_area.y - y_offset))
+    
+    def _animate_blink_on_image(self, image: pygame.Surface, face_state: FaceState):
+        """Apply blink animation to Holly's image"""
+        width, height = image.get_size()
+        
+        # Estimate eye areas (roughly upper third)
+        left_eye_area = pygame.Rect(width // 4, height // 4, width // 8, height // 12)
+        right_eye_area = pygame.Rect(width * 5 // 8, height // 4, width // 8, height // 12)
+        
+        # Darken eye areas when blinking
+        blink_overlay = pygame.Surface((width // 8, height // 12))
+        blink_overlay.fill((0, 0, 0))
+        
+        if face_state.left_blink < 0.5:
+            alpha = int(255 * (1.0 - face_state.left_blink * 2))
+            blink_overlay.set_alpha(alpha)
+            image.blit(blink_overlay, left_eye_area)
+        
+        if face_state.right_blink < 0.5:
+            alpha = int(255 * (1.0 - face_state.right_blink * 2))
+            blink_overlay.set_alpha(alpha)
+            image.blit(blink_overlay, right_eye_area)
+    
+    def _draw_interface_overlay(self, face_x: int, face_y: int):
+        """Draw Red Dwarf computer interface elements around Holly"""
+        # Corner brackets around Holly
+        bracket_size = 30
+        bracket_offset = self.holly_scale + 40
+        
+        # Top-left bracket
+        tl_x, tl_y = face_x - bracket_offset, face_y - bracket_offset
+        pygame.draw.lines(self.screen, self.colors['accent_red'], False, [
+            (tl_x, tl_y + bracket_size), (tl_x, tl_y), (tl_x + bracket_size, tl_y)
+        ], 3)
+        
+        # Top-right bracket
+        tr_x, tr_y = face_x + bracket_offset, face_y - bracket_offset
+        pygame.draw.lines(self.screen, self.colors['accent_red'], False, [
+            (tr_x - bracket_size, tr_y), (tr_x, tr_y), (tr_x, tr_y + bracket_size)
+        ], 3)
+        
+        # Bottom-left bracket
+        bl_x, bl_y = face_x - bracket_offset, face_y + bracket_offset
+        pygame.draw.lines(self.screen, self.colors['accent_red'], False, [
+            (bl_x, bl_y - bracket_size), (bl_x, bl_y), (bl_x + bracket_size, bl_y)
+        ], 3)
+        
+        # Bottom-right bracket
+        br_x, br_y = face_x + bracket_offset, face_y + bracket_offset
+        pygame.draw.lines(self.screen, self.colors['accent_red'], False, [
+            (br_x - bracket_size, br_y), (br_x, br_y), (br_x, br_y - bracket_size)
+        ], 3)
+        
+        # Status indicators
+        pygame.draw.circle(self.screen, self.colors['accent_green'], 
+                         (face_x - bracket_offset - 20, face_y), 5)
+        pygame.draw.circle(self.screen, self.colors['accent_yellow'], 
+                         (face_x + bracket_offset + 20, face_y), 5)
+        
+        # Scan lines effect
+        for i in range(0, self.screen_height, 4):
+            pygame.draw.line(self.screen, (0, 20, 40), 
+                           (0, i), (self.screen_width, i), 1)
