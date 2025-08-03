@@ -1,0 +1,313 @@
+/* Red Dwarf Holly AI Interface Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+    color: #c8d6e5;
+    overflow: hidden;
+    height: 100vh;
+}
+
+.interface-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(52, 152, 219, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(231, 76, 60, 0.1) 0%, transparent 50%),
+        url('data:image/svg+xml,<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="none" stroke="rgba(41,128,185,0.1)" stroke-width="1"/></svg>');
+}
+
+/* Computer Grid Overlay */
+.grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(52, 152, 219, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(52, 152, 219, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridFlow 20s linear infinite;
+}
+
+@keyframes gridFlow {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(40px, 40px); }
+}
+
+/* Holly Face Container */
+.holly-face-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+/* Control Panels */
+.control-panel {
+    position: absolute;
+    background: linear-gradient(145deg, rgba(44, 62, 80, 0.8), rgba(52, 73, 94, 0.9));
+    border: 2px solid rgba(52, 152, 219, 0.7);
+    border-radius: 10px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 0 20px rgba(52, 152, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.control-panel.top-left {
+    top: 20px;
+    left: 20px;
+    width: 200px;
+    height: 120px;
+}
+
+.control-panel.top-right {
+    top: 20px;
+    right: 20px;
+    width: 200px;
+    height: 120px;
+}
+
+.panel-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #3498db;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.panel-content {
+    font-size: 12px;
+    color: #95a5a6;
+    line-height: 1.4;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    box-shadow: 0 0 10px currentColor;
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-indicator.online { color: #27ae60; }
+.status-indicator.warning { color: #f39c12; }
+.status-indicator.error { color: #e74c3c; }
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Status Bar */
+.status-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(90deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.8));
+    border-top: 1px solid rgba(52, 152, 219, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.status-text {
+    font-size: 14px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Voice Activity Indicator */
+.voice-indicator {
+    position: absolute;
+    bottom: 60px;
+    left: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.voice-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #e74c3c;
+    animation: voicePulse 1s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
+}
+
+@keyframes voicePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.voice-text {
+    font-size: 14px;
+    color: #e74c3c;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* AI Thinking Indicator */
+.thinking-indicator {
+    position: absolute;
+    bottom: 60px;
+    right: 150px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.thinking-dots {
+    font-size: 18px;
+    color: #f39c12;
+    animation: thinkingDots 1.5s ease-in-out infinite;
+}
+
+@keyframes thinkingDots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* Instructions Panel */
+.instructions-panel {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(145deg, rgba(44, 62, 80, 0.7), rgba(52, 73, 94, 0.8));
+    border: 2px solid rgba(52, 152, 219, 0.5);
+    border-radius: 8px;
+    padding: 15px 25px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.instructions-panel .panel-content {
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* Holly Face Styles */
+.holly-face {
+    width: 300px;
+    height: 300px;
+    position: relative;
+    animation: hollyFloat 6s ease-in-out infinite;
+}
+
+@keyframes hollyFloat {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(5px, -8px) rotate(1deg); }
+    50% { transform: translate(-3px, -5px) rotate(-0.5deg); }
+    75% { transform: translate(-8px, 3px) rotate(0.8deg); }
+}
+
+/* Computer Terminal Effect */
+.terminal-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at center, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+    animation: terminalGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes terminalGlow {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.7; }
+}
+
+/* Scan Lines Effect */
+.scan-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(transparent 0%, rgba(52, 152, 219, 0.05) 2%, transparent 4%);
+    background-size: 100% 4px;
+    animation: scanLines 2s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes scanLines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+/* Red Dwarf Aesthetic Elements */
+.red-dwarf-logo {
+    position: absolute;
+    bottom: 100px;
+    right: 50px;
+    opacity: 0.3;
+    font-size: 24px;
+    color: #e74c3c;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transform: rotate(-5deg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .control-panel {
+        width: 160px;
+        height: 100px;
+        padding: 10px;
+    }
+    
+    .panel-title {
+        font-size: 14px;
+    }
+    
+    .panel-content {
+        font-size: 10px;
+    }
+    
+    .holly-face {
+        width: 250px;
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .control-panel.top-left,
+    .control-panel.top-right {
+        width: 140px;
+        height: 80px;
+        padding: 8px;
+    }
+    
+    .instructions-panel {
+        width: 90%;
+        padding: 10px 15px;
+    }
+    
+    .holly-face {
+        width: 200px;
+        height: 200px;
+    }
+}

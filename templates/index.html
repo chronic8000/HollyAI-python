@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holly - Red Dwarf AI Avatar</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <style>
+        /* Additional specific styles for the Holly interface */
+        body {
+            cursor: none; /* Hide cursor for immersive experience */
+            user-select: none;
+        }
+        
+        .holly-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+        }
+        
+        .holly-svg-container {
+            position: relative;
+            filter: drop-shadow(0 0 20px rgba(52, 152, 219, 0.5));
+        }
+        
+        /* Expression overlays */
+        .expression-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .expression-overlay.active {
+            opacity: 1;
+        }
+        
+        /* Lip sync animation */
+        .mouth-animation {
+            transform-origin: center;
+            transition: transform 0.1s ease;
+        }
+        
+        /* Eye movement */
+        .eye-animation {
+            transform-origin: center;
+            transition: transform 0.2s ease;
+        }
+        
+        /* Blink animation */
+        .blink-animation {
+            transform-origin: center;
+            transition: transform 0.1s ease;
+        }
+        
+        /* Computer interface elements */
+        .interface-element {
+            position: absolute;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            background: rgba(44, 62, 80, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        
+        .data-stream {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, #3498db, transparent);
+            animation: dataFlow 3s linear infinite;
+        }
+        
+        @keyframes dataFlow {
+            0% { transform: translateY(-100vh) scaleY(0); }
+            10% { transform: translateY(-100vh) scaleY(1); }
+            90% { transform: translateY(100vh) scaleY(1); }
+            100% { transform: translateY(100vh) scaleY(0); }
+        }
+        
+        /* Holly specific animations */
+        .holly-thinking::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: thinkingBubble 2s ease-in-out infinite;
+        }
+        
+        @keyframes thinkingBubble {
+            0%, 100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1); }
+        }
+        
+        .holly-speaking .mouth-animation {
+            animation: speakingMouth 0.2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes speakingMouth {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1.2); }
+        }
+        
+        /* Status overlays */
+        .status-overlay {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 60px;
+            background: linear-gradient(90deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.8));
+            border: 1px solid rgba(52, 152, 219, 0.5);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(10px);
+            z-index: 200;
+        }
+        
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .system-status {
+            font-size: 12px;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .holly-status {
+            font-size: 14px;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Emergency/Error states */
+        .error-state {
+            animation: errorFlash 1s ease-in-out infinite;
+        }
+        
+        @keyframes errorFlash {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(180deg); }
+        }
+        
+        .warning-state {
+            animation: warningPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes warningPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Accessibility features */
+        .screen-reader-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Full screen mode adjustments */
+        .fullscreen-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main interface container -->
+    <div class="interface-container" id="hollyInterface">
+        <!-- Background grid -->
+        <div class="grid-overlay"></div>
+        
+        <!-- Terminal glow effect -->
+        <div class="terminal-glow"></div>
+        
+        <!-- Scan lines effect -->
+        <div class="scan-lines"></div>
+        
+        <!-- Top left control panel -->
+        <div class="control-panel top-left">
+            <div class="panel-title">Red Dwarf</div>
+            <div class="panel-content">
+                <div><span class="status-indicator online"></span>System Online</div>
+                <div><span class="status-indicator warning"></span>Life Support</div>
+                <div><span class="status-indicator online"></span>Navigation</div>
+                <div class="system-status">JMC Mining Ship</div>
+            </div>
+        </div>
+        
+        <!-- Top right Holly info panel -->
+        <div class="control-panel top-right">
+            <div class="panel-title">Holly</div>
+            <div class="panel-content">
+                <div class="holly-status">IQ: 6,000</div>
+                <div><span class="status-indicator online"></span>AI Online</div>
+                <div><span class="status-indicator warning"></span>Senile Mode</div>
+                <div class="system-status">10th Gen AI</div>
+            </div>
+        </div>
+        
+        <!-- Instructions panel -->
+        <div class="instructions-panel">
+            <div class="panel-content">
+                <div>SPACE - Manual Speech Trigger | T - Test Response | ESC - Exit</div>
+                <div>Speak normally - Holly is listening</div>
+            </div>
+        </div>
+        
+        <!-- Holly face container -->
+        <div class="holly-container" id="hollyContainer">
+            <div class="holly-svg-container" id="hollySvgContainer">
+                <!-- Holly's face SVG will be dynamically loaded here -->
+                <div id="hollyFace" class="holly-face">
+                    <!-- Face elements will be rendered by Python -->
+                </div>
+                
+                <!-- Expression overlays -->
+                <div class="expression-overlay" id="expressionNeutral"></div>
+                <div class="expression-overlay" id="expressionThinking"></div>
+                <div class="expression-overlay" id="expressionAmused"></div>
+                <div class="expression-overlay" id="expressionConfused"></div>
+                <div class="expression-overlay" id="expressionSmug"></div>
+                <div class="expression-overlay" id="expressionBored"></div>
+                <div class="expression-overlay" id="expressionSenile"></div>
+                <div class="expression-overlay" id="expressionMischievous"></div>
+            </div>
+        </div>
+        
+        <!-- Voice activity indicator -->
+        <div class="voice-indicator" id="voiceIndicator" style="display: none;">
+            <div class="voice-dot"></div>
+            <span class="voice-text">Listening</span>
+        </div>
+        
+        <!-- AI thinking indicator -->
+        <div class="thinking-indicator" id="thinkingIndicator" style="display: none;">
+            <span class="thinking-dots">Processing...</span>
+        </div>
+        
+        <!-- Data streams -->
+        <div class="data-stream" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="data-stream" style="left: 25%; animation-delay: 1s;"></div>
+        <div class="data-stream" style="left: 75%; animation-delay: 0.5s;"></div>
+        <div class="data-stream" style="left: 90%; animation-delay: 1.5s;"></div>
+        
+        <!-- Status overlay -->
+        <div class="status-overlay">
+            <div class="status-left">
+                <div class="system-status">Jupiter Mining Corporation</div>
+                <div class="system-status">Ship's Computer Interface</div>
+            </div>
+            <div class="status-right">
+                <div class="system-status" id="systemTime">00:00:00</div>
+                <div class="system-status">Deep Space</div>
+            </div>
+        </div>
+        
+        <!-- Red Dwarf logo -->
+        <div class="red-dwarf-logo">Red Dwarf</div>
+    </div>
+    
+    <!-- Screen reader accessibility -->
+    <div class="screen-reader-only" id="screenReaderContent">
+        Holly AI Avatar - Red Dwarf Ship's Computer Interface
+    </div>
+    
+    <!-- JavaScript for interface interactions -->
+    <script>
+        // Basic interface interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update system time
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toTimeString().split(' ')[0];
+                document.getElementById('systemTime').textContent = timeString;
+            }
+            
+            setInterval(updateTime, 1000);
+            updateTime();
+            
+            // Keyboard event handling (for communication with Python)
+            document.addEventListener('keydown', function(event) {
+                switch(event.code) {
+                    case 'Space':
+                        event.preventDefault();
+                        // Signal manual speech trigger
+                        window.dispatchEvent(new CustomEvent('manualSpeechTrigger'));
+                        break;
+                    case 'KeyT':
+                        event.preventDefault();
+                        // Signal test response
+                        window.dispatchEvent(new CustomEvent('testResponse'));
+                        break;
+                    case 'Escape':
+                        event.preventDefault();
+                        // Signal exit application
+                        window.dispatchEvent(new CustomEvent('exitApplication'));
+                        break;
+                }
+            });
+            
+            // Interface state management
+            window.hollyInterface = {
+                showVoiceIndicator: function(show) {
+                    document.getElementById('voiceIndicator').style.display = show ? 'flex' : 'none';
+                },
+                
+                showThinkingIndicator: function(show) {
+                    document.getElementById('thinkingIndicator').style.display = show ? 'flex' : 'none';
+                },
+                
+                setExpression: function(expression) {
+                    // Hide all expressions
+                    document.querySelectorAll('.expression-overlay').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    
+                    // Show target expression
+                    const expressionElement = document.getElementById('expression' + expression.charAt(0).toUpperCase() + expression.slice(1));
+                    if (expressionElement) {
+                        expressionElement.classList.add('active');
+                    }
+                },
+                
+                setSpeaking: function(speaking) {
+                    const hollyContainer = document.getElementById('hollyContainer');
+                    if (speaking) {
+                        hollyContainer.classList.add('holly-speaking');
+                    } else {
+                        hollyContainer.classList.remove('holly-speaking');
+                    }
+                },
+                
+                setThinking: function(thinking) {
+                    const hollyContainer = document.getElementById('hollyContainer');
+                    if (thinking) {
+                        hollyContainer.classList.add('holly-thinking');
+                    } else {
+                        hollyContainer.classList.remove('holly-thinking');
+                    }
+                },
+                
+                setErrorState: function(error) {
+                    const interface = document.getElementById('hollyInterface');
+                    if (error) {
+                        interface.classList.add('error-state');
+                    } else {
+                        interface.classList.remove('error-state');
+                    }
+                },
+                
+                setWarningState: function(warning) {
+                    const interface = document.getElementById('hollyInterface');
+                    if (warning) {
+                        interface.classList.add('warning-state');
+                    } else {
+                        interface.classList.remove('warning-state');
+                    }
+                }
+            };
+            
+            // Enter fullscreen on load
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => {
+                    console.log('Fullscreen request failed:', err);
+                });
+            }
+            
+            // Handle fullscreen change
+            document.addEventListener('fullscreenchange', function() {
+                const interface = document.getElementById('hollyInterface');
+                if (document.fullscreenElement) {
+                    interface.classList.add('fullscreen-mode');
+                } else {
+                    interface.classList.remove('fullscreen-mode');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Space background gradient -->
+    <radialGradient id="spaceGradient" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f23;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Panel gradient -->
+    <linearGradient id="panelGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c3e50;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#34495e;stop-opacity:0.9" />
+    </linearGradient>
+    
+    <!-- Screen glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Grid pattern -->
+    <pattern id="computerGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#2980b9" stroke-width="0.5" opacity="0.3"/>
+    </pattern>
+  </defs>
+  
+  <!-- Space background -->
+  <rect width="100%" height="100%" fill="url(#spaceGradient)"/>
+  
+  <!-- Grid overlay -->
+  <rect width="100%" height="100%" fill="url(#computerGrid)"/>
+  
+  <!-- Stars -->
+  <g fill="white" opacity="0.8">
+    <circle cx="100" cy="80" r="1"/>
+    <circle cx="230" cy="120" r="1.5"/>
+    <circle cx="450" cy="90" r="1"/>
+    <circle cx="680" cy="150" r="1"/>
+    <circle cx="890" cy="70" r="1.5"/>
+    <circle cx="1050" cy="110" r="1"/>
+    <circle cx="1180" cy="140" r="1"/>
+    <circle cx="150" cy="300" r="1"/>
+    <circle cx="350" cy="280" r="1.5"/>
+    <circle cx="550" cy="320" r="1"/>
+    <circle cx="750" cy="290" r="1"/>
+    <circle cx="950" cy="310" r="1.5"/>
+    <circle cx="1150" cy="280" r="1"/>
+    <circle cx="80" cy="500" r="1"/>
+    <circle cx="280" cy="480" r="1.5"/>
+    <circle cx="480" cy="520" r="1"/>
+    <circle cx="680" cy="490" r="1"/>
+    <circle cx="880" cy="510" r="1.5"/>
+    <circle cx="1080" cy="480" r="1"/>
+    <circle cx="200" cy="600" r="1"/>
+    <circle cx="400" cy="580" r="1.5"/>
+    <circle cx="600" cy="620" r="1"/>
+    <circle cx="800" cy="590" r="1"/>
+    <circle cx="1000" cy="610" r="1.5"/>
+    <circle cx="1200" cy="580" r="1"/>
+  </g>
+  
+  <!-- Top control panel -->
+  <rect x="20" y="20" width="200" height="120" rx="10" fill="url(#panelGradient)" stroke="#3498db" stroke-width="2"/>
+  
+  <!-- Panel details -->
+  <g fill="#3498db" opacity="0.8">
+    <rect x="35" y="35" width="170" height="3" rx="1"/>
+    <rect x="35" y="45" width="120" height="3" rx="1"/>
+    <rect x="35" y="55" width="150" height="3" rx="1"/>
+    
+    <circle cx="50" cy="80" r="8" fill="none" stroke="#27ae60" stroke-width="2"/>
+    <circle cx="80" cy="80" r="8" fill="none" stroke="#e74c3c" stroke-width="2"/>
+    <circle cx="110" cy="80" r="8" fill="none" stroke="#f39c12" stroke-width="2"/>
+    
+    <rect x="140" y="72" width="50" height="16" rx="2" fill="none" stroke="#3498db" stroke-width="1"/>
+  </g>
+  
+  <!-- Holly info panel (top-right) -->
+  <rect x="1060" y="20" width="200" height="120" rx="10" fill="url(#panelGradient)" stroke="#3498db" stroke-width="2"/>
+  
+  <!-- Holly panel details -->
+  <g fill="#3498db" opacity="0.8">
+    <rect x="1075" y="35" width="170" height="4" rx="2"/>
+    <rect x="1075" y="45" width="100" height="3" rx="1"/>
+    <rect x="1075" y="55" width="140" height="3" rx="1"/>
+    
+    <!-- IQ indicator -->
+    <rect x="1075" y="75" width="80" height="20" rx="3" fill="none" stroke="#f39c12" stroke-width="2"/>
+    <rect x="1080" y="80" width="60" height="10" rx="1" fill="#f39c12" opacity="0.6"/>
+    
+    <!-- Status lights -->
+    <circle cx="1190" cy="85" r="6" fill="#27ae60" filter="url(#glow)"/>
+    <circle cx="1210" cy="85" r="6" fill="#3498db" filter="url(#glow)"/>
+    <circle cx="1230" cy="85" r="6" fill="#e74c3c" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Bottom status bar -->
+  <rect x="0" y="680" width="1280" height="40" fill="url(#panelGradient)" stroke="#3498db" stroke-width="1"/>
+  
+  <!-- Status bar elements -->
+  <g fill="#3498db" opacity="0.7">
+    <rect x="20" y="690" width="300" height="3" rx="1"/>
+    <rect x="350" y="690" width="200" height="3" rx="1"/>
+    <rect x="580" y="690" width="250" height="3" rx="1"/>
+    <rect x="860" y="690" width="180" height="3" rx="1"/>
+    <rect x="1070" y="690" width="190" height="3" rx="1"/>
+    
+    <!-- System indicators -->
+    <circle cx="30" cy="705" r="4" fill="#27ae60"/>
+    <circle cx="50" cy="705" r="4" fill="#27ae60"/>
+    <circle cx="70" cy="705" r="4" fill="#f39c12"/>
+    <circle cx="90" cy="705" r="4" fill="#e74c3c"/>
+  </g>
+  
+  <!-- Central interface elements -->
+  <g stroke="#3498db" stroke-width="1" fill="none" opacity="0.4">
+    <!-- Corner brackets around center area -->
+    <path d="M 540 260 L 540 290 L 570 290"/>
+    <path d="M 740 260 L 740 290 L 710 290"/>
+    <path d="M 540 460 L 540 430 L 570 430"/>
+    <path d="M 740 460 L 740 430 L 710 430"/>
+    
+    <!-- Scanning lines -->
+    <line x1="520" y1="360" x2="760" y2="360" opacity="0.6">
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3s" repeatCount="indefinite"/>
+    </line>
+    
+    <!-- Data flow indicators -->
+    <path d="M 100 360 Q 300 340 500 360">
+      <animate attributeName="stroke-dasharray" values="0,100;50,50;100,0" dur="4s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 780 360 Q 980 340 1180 360">
+      <animate attributeName="stroke-dasharray" values="0,100;50,50;100,0" dur="4s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Red Dwarf ship silhouette (subtle) -->
+  <g transform="translate(900, 400) scale(0.3)" fill="#e74c3c" opacity="0.2">
+    <rect x="0" y="0" width="200" height="40" rx="20"/>
+    <rect x="50" y="-20" width="100" height="20" rx="10"/>
+    <rect x="80" y="-35" width="40" height="15" rx="5"/>
+    <circle cx="20" cy="20" r="15"/>
+    <circle cx="180" cy="20" r="15"/>
+  </g>
+  
+  <!-- Animated elements -->
+  <g stroke="#3498db" stroke-width="2" fill="none" opacity="0.6">
+    <!-- Rotating scanner -->
+    <circle cx="640" cy="360" r="150" stroke-dasharray="10,20">
+      <animateTransform attributeName="transform" type="rotate" values="0 640 360;360 640 360" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Pulsing center -->
+    <circle cx="640" cy="360" r="10" fill="#3498db">
+      <animate attributeName="r" values="5;15;5" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Text elements (will be replaced by actual UI text) -->
+  <g fill="#2980b9" opacity="0.8" font-family="monospace" font-size="12">
+    <text x="30" y="110" text-anchor="start">RED DWARF</text>
+    <text x="30" y="125" text-anchor="start">MINING SHIP</text>
+    <text x="1070" y="110" text-anchor="start">HOLLY AI</text>
+    <text x="1070" y="125" text-anchor="start">COMPUTER</text>
+    <text x="640" y="710" text-anchor="middle">JUPITER MINING CORPORATION - SHIP'S COMPUTER INTERFACE</text>
+  </g>
+  
+  <!-- Subtle scan lines effect -->
+  <g stroke="#3498db" stroke-width="0.5" opacity="0.1">
+    <line x1="0" y1="100" x2="1280" y2="100"/>
+    <line x1="0" y1="200" x2="1280" y2="200"/>
+    <line x1="0" y1="300" x2="1280" y2="300"/>
+    <line x1="0" y1="400" x2="1280" y2="400"/>
+    <line x1="0" y1="500" x2="1280" y2="500"/>
+    <line x1="0" y1="600" x2="1280" y2="600"/>
+  </g>
+</svg>

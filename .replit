@@ -1,0 +1,25 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-25_05"
+packages = ["SDL2", "SDL2_image", "SDL2_mixer", "SDL2_ttf", "espeak-ng", "fontconfig", "freetype", "libGL", "libGLU", "libjpeg", "libpng", "pkg-config", "portaudio", "portmidi"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Holly AI Avatar"
+
+[[workflows.workflow]]
+name = "Holly AI Avatar"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
